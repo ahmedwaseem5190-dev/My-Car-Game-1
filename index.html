@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Race Mobile</title>
+    <style>
+        body { margin: 0; background: #222; overflow: hidden; font-family: sans-serif; touch-action: manipulation; }
+        #road { width: 100vw; height: 100vh; background: #444; position: relative; border-left: 5px dashed #fff; border-right: 5px dashed #fff; }
+        .car { width: 45px; height: 75px; position: absolute; border-radius: 8px; }
+        #player { background: #ff0000; bottom: 130px; left: 50%; transform: translateX(-50%); border: 2px solid white; box-shadow: 0 0 10px red; }
+        .enemy { background: #008cff; top: -100px; border: 1px solid white; }
+        #score { position: absolute; top: 15px; left: 15px; color: white; font-size: 22px; z-index: 10; font-weight: bold; }
+        .controls { position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: space-around; }
+        .btn { width: 75px; height: 75px; background: rgba(255,255,255,0.2); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; border: 2px solid white; }
+    </style>
+</head>
+<body>
+    <div id="score">Score: 0</div>
+    <div id="road"><div id="player" class="car"></div></div>
+    <div class="controls">
+        <div class="btn" onclick="move(-40)">←</div>
+        <div class="btn" onclick="move(40)">→</div>
+    </div>
+    <script>
+        const player = document.getElementById('player');
+        let score = 0, pPos = window.innerWidth / 2 - 22;
+        function move(val) {
+            pPos += val;
+            if(pPos < 10) pPos = 10;
+            if(pPos > window.innerWidth - 55) pPos = window.innerWidth - 55;
+            player.style.left = pPos + 'px';
+        }
+        function createEnemy() {
+            const enemy = document.createElement('div');
+            enemy.classList.add('car', 'enemy');
+            enemy.style.left = Math.random() * (window.innerWidth - 50) + 'px';
+            document.getElementById('road').appendChild(enemy);
+            let top = -100;
+            let timer = setInterval(() => {
+                top += 5; enemy.style.top = top + 'px';
+                let p = player.getBoundingClientRect(), e = enemy.getBoundingClientRect();
+                if (!(p.right < e.left || p.left > e.right || p.bottom < e.top || p.top > e.bottom)) {
+                    alert("Game Over! Score: " + score); location.reload();
+                }
+                if (top > window.innerHeight) { enemy.remove(); score++; document.getElementById('score').innerText = "Score: " + score; clearInterval(timer); }
+            }, 20);
+        }
+        setInterval(createEnemy, 1500);
+    </script>
+</body>
+</html>
